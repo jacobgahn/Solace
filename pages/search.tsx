@@ -1,44 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { get_advocates } from "@/app/api/advocates/route";
+import { useState } from "react";
 
-export default function AdvocateSearch() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+const DEFAULT_PAGE_SIZE = 10;
+
+interface Props {
+  initialAdvocates: Advocate[];
+}
+
+export default function AdvocateSearch({ initialAdvocates }: Props) {
+  const [advocates, setAdvocates] = useState(initialAdvocates);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
-  }, []);
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value;
+  const searchAdvocates = async (searchTerm: string): Promise<Advocate[]> => {
     setSearchTerm(searchTerm);
-
-    const filtered = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        advocate.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        advocate.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        advocate.degree.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        advocate.specialties.some(s => 
-          s.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
+    const advocates = await fetch(`/api/advocates?searchTerm=${searchTerm}&page=${page}&pageSize=${pageSize}`).then((response) => {
+      return response.json()
     });
+    setAdvocates(advocates);
+    return advocates;
+  }
 
-    setFilteredAdvocates(filtered);
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value;
+    await searchAdvocates(searchTerm);
   };
 
   const onClick = () => {
-    setFilteredAdvocates(advocates);
-    setSearchTerm("");
+    searchAdvocates("");
   };
 
   return (
@@ -73,7 +65,7 @@ export default function AdvocateSearch() {
           </tr>
         </thead>
         <tbody>
-          {filteredAdvocates.map((advocate) => (
+          {advocates.map((advocate) => (
             <tr key={advocate.firstName + advocate.lastName}>
               <td>{advocate.firstName}</td>
               <td>{advocate.lastName}</td>
@@ -93,3 +85,9 @@ export default function AdvocateSearch() {
     </main>
   );
 }
+
+
+export const getServerSideProps = async () => {
+  const advocates = await get_advocates()
+  return { props: { initialAdvocates: advocates } };
+};
