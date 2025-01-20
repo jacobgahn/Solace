@@ -1,41 +1,66 @@
-import db from "../../../db";
-import { advocates } from "../../../db/schema";
-import { sql } from "drizzle-orm";
-export const get_advocates = async (params?: {
-  searchTerm?: string;
-  page?: number;
-  pageSize?: number;
-}): Promise<Advocate[]> => {
-  const { searchTerm = null, page = 1, pageSize = 10 } = params || {};
-  
-  const data: Advocate[] = await db.select().from(advocates).where(
-    searchTerm 
-        ? sql`${advocates.firstName} ILIKE ${searchTerm} 
-            OR ${advocates.lastName} ILIKE ${searchTerm} 
-            OR ${advocates.city} ILIKE ${searchTerm} 
-            OR ${advocates.degree} ILIKE ${searchTerm}`
-          : undefined
-  ).limit(pageSize).offset((page - 1) * pageSize);
+import { searchAdvocates } from "@/app/selectors/advocates";
+import { getUniqueSpecialties } from "@/app/selectors/specialties";
 
+interface Filters {
+	searchTerm?: string;
+	specialties?: string[];
+	page?: number;
+	pageSize?: number;
+}
 
-  return data.map((advocate) => ({
-    firstName: advocate.firstName,
-    lastName: advocate.lastName,
-    city: advocate.city,
-    degree: advocate.degree,
-    specialties: advocate.specialties as string[],
-    yearsOfExperience: advocate.yearsOfExperience,
-    phoneNumber: advocate.phoneNumber,
-  }));
+interface ResponseBody {
+	advocates: Advocate[];
+	specialties: string[];
+}
+
+export const getAdvocates = async ({
+	searchTerm,
+	specialties,
+	page,
+	pageSize,
+}: Filters): Promise<ResponseBody> => {
+	const advocates = await searchAdvocates({
+		searchTerm,
+		specialties,
+		page,
+		pageSize,
+	});
+
+	const uniqueSpecialties = await getUniqueSpecialties(advocates);
+
+	const data = advocates.map((advocate) => ({
+		firstName: advocate.firstName,
+		lastName: advocate.lastName,
+		city: advocate.city,
+		degree: advocate.degree,
+		specialties: advocate.specialties ?? [],
+		yearsOfExperience: advocate.yearsOfExperience,
+		phoneNumber: advocate.phoneNumber,
+	}));
+
+	return {
+		advocates: data,
+		specialties: uniqueSpecialties,
+	};
 };
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const searchTerm = searchParams.get("searchTerm") || undefined;
-  const page = Number(searchParams.get("page")) || undefined;
-  const pageSize = Number(searchParams.get("pageSize")) || undefined;
+export const POST = async (request: Request): Promise<Response> => {
+	const {
+		searchTerm,
+		specialties: specialtiesFilter,
+		page,
+		pageSize,
+	}: Filters = await request.json();
 
-  const data = await get_advocates({ searchTerm, page, pageSize });
+	const { advocates, specialties } = await getAdvocates({
+		searchTerm,
+		specialties: specialtiesFilter,
+		page,
+		pageSize,
+	});
 
-  return Response.json(data);
-}
+	return Response.json({
+		advocates,
+		specialties,
+	});
+};
