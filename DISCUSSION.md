@@ -1,11 +1,27 @@
-Backend
+# Business Logic
+
+- Is specialty filter AND or OR?
+
+# Backend
+
 - Api Integration Tests
 - url params to filter search in getserversideprops
 - Fuzzy matching for string searches
 - Structured filtering by specialties tag
 - Better error handling
+- Authentication
+- Containerize
+- CRUD advocates
+- Db indexing
+- Normalize specialties table
+- Move to db first db migration approach, update documentation
+- Add migration to copy specialties from old table to new table
+- Soft Delete, modified timestamps
+- Seed should not be an api endpoint, security issue
+- Return set of specialties applicable to search response
 
-Frontend
+# Frontend
+
 - Page and page size controls
 - loading indicator
 - filter facets for each searchable field instead of the 'quick search'
@@ -20,7 +36,9 @@ Frontend
 - Debounce search boxes (delay auto search until user stops typing) [This currently causes a bit of a bug if you type fast]
 - Move filters to collapsible sidebar
 
-Future improvements
+# Future improvements
+
 - Advocate pic, rating, testimonials, etc in search card
 - Advocate profile page
 - AI "find an advocate"
+- Advocate profile management
