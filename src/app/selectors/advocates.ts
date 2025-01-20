@@ -1,6 +1,6 @@
 import db from "@/db";
 import { advocates, SelectAdvocate } from "../../db/schema";
-import { arrayOverlaps, sql } from "drizzle-orm";
+import { and, arrayOverlaps, sql } from "drizzle-orm";
 import { DEFAULT_PAGE_SIZE } from "@/constants";
 
 export const searchAdvocates = async ({
@@ -14,24 +14,24 @@ export const searchAdvocates = async ({
 	page?: number;
 	pageSize?: number;
 }): Promise<SelectAdvocate[]> => {
-	const query = db.select().from(advocates);
-
-	if (searchTerm) {
-		query.where(
-			sql`${advocates.firstName} ILIKE ${searchTerm} 
-                OR ${advocates.lastName} ILIKE ${searchTerm} 
-                OR ${advocates.city} ILIKE ${searchTerm} 
-                OR ${advocates.degree} ILIKE ${searchTerm}`
-		);
-	}
-
-	if (specialties.length > 0) {
-		query.where(arrayOverlaps(advocates.specialties, specialties));
-	}
-
-	if (page && pageSize) {
-		query.limit(pageSize).offset((page - 1) * pageSize);
-	}
+	const query = db
+		.select()
+		.from(advocates)
+		.where(
+			and(
+				searchTerm
+					? sql`${advocates.firstName} ILIKE ${searchTerm} 
+                    OR ${advocates.lastName} ILIKE ${searchTerm} 
+                    OR ${advocates.city} ILIKE ${searchTerm} 
+					OR ${advocates.degree} ILIKE ${searchTerm}`
+					: sql`true`,
+				specialties.length > 0
+					? arrayOverlaps(advocates.specialties, specialties)
+					: sql`true`
+			)
+		)
+		.limit(pageSize)
+		.offset((page - 1) * pageSize);
 
 	return await query;
 };
