@@ -134,7 +134,7 @@ export default function AdvocateSearch({
 						{specialtyFilterInputs.length > 0 && (
 							<button
 								onClick={() => clearSpecialties()}
-								className="mt-4 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors"
+								className="mt-4 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
 							>
 								Clear Specialties
 							</button>
