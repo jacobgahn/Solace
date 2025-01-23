@@ -20,7 +20,6 @@
 
 # Frontend
 
-- Page and page size controls
 - loading indicator
 - filter facets for each searchable field instead of the 'quick search'
 - Search filters in url + browser history

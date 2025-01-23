@@ -229,9 +229,14 @@ export default function AdvocateSearch({
 				>
 					Previous
 				</button>
-				<span className="text-sm text-gray-700">
-					Page {page} of {totalPages}
-				</span>
+				<div className="flex flex-col items-center">
+					<span className="text-sm text-gray-700">
+						Page {page} of {totalPages}
+					</span>
+					<span className="text-sm text-gray-700">
+						Showing {advocates.length} results
+					</span>
+				</div>
 				<button
 					onClick={goToNextPage}
 					disabled={page === totalPages}
@@ -239,6 +244,25 @@ export default function AdvocateSearch({
 				>
 					Next
 				</button>
+				<div className="flex justify-between items-center mb-4">
+					<label
+						htmlFor="pageSize"
+						className="text-sm font-semibold text-gray-700"
+					>
+						Page Size:
+					</label>
+					<select
+						id="pageSize"
+						value={pageSize}
+						onChange={(e) => setPageSize(Number(e.target.value))}
+						className="ml-2 px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+					>
+						<option value={5}>5</option>
+						<option value={10}>10</option>
+						<option value={20}>20</option>
+						<option value={50}>50</option>
+					</select>
+				</div>
 			</div>
 		</main>
 	);
