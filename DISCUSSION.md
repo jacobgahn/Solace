@@ -16,11 +16,10 @@
 - Move to db first db migration approach, update documentation
 - Add migration to copy specialties from old table to new table
 - Soft Delete, modified timestamps
-- Return set of specialties applicable to search response
+- Return set of specialties applicable to search response (IF AND filter)
 
 # Frontend
 
-- Page and page size controls
 - loading indicator
 - filter facets for each searchable field instead of the 'quick search'
 - Search filters in url + browser history
