@@ -1,6 +1,5 @@
 import { searchAdvocates } from "@/app/selectors/advocates";
 import { getUniqueSpecialties } from "@/app/selectors/specialties";
-import { NextApiRequest } from "next";
 
 interface Filters {
 	searchTerm?: string;
