@@ -16,7 +16,7 @@
 - Move to db first db migration approach, update documentation
 - Add migration to copy specialties from old table to new table
 - Soft Delete, modified timestamps
-- Return set of specialties applicable to search response
+- Return set of specialties applicable to search response (IF AND filter)
 
 # Frontend
 

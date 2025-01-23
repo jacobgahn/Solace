@@ -1,5 +1,6 @@
 import { searchAdvocates } from "@/app/selectors/advocates";
 import { getUniqueSpecialties } from "@/app/selectors/specialties";
+import { NextApiRequest } from "next";
 
 interface Filters {
 	searchTerm?: string;
@@ -11,6 +12,7 @@ interface Filters {
 interface ResponseBody {
 	advocates: Advocate[];
 	specialties: string[];
+	totalResults: number;
 }
 
 export const getAdvocates = async ({
@@ -19,7 +21,7 @@ export const getAdvocates = async ({
 	page,
 	pageSize,
 }: Filters): Promise<ResponseBody> => {
-	const advocates = await searchAdvocates({
+	const { advocates, totalResults } = await searchAdvocates({
 		searchTerm,
 		specialties,
 		page,
@@ -41,6 +43,7 @@ export const getAdvocates = async ({
 	return {
 		advocates: data,
 		specialties: uniqueSpecialties,
+		totalResults,
 	};
 };
 
@@ -52,15 +55,17 @@ export const POST = async (request: Request): Promise<Response> => {
 		pageSize,
 	}: Filters = await request.json();
 
-	const { advocates, specialties } = await getAdvocates({
+	const { advocates, specialties, totalResults } = await getAdvocates({
 		searchTerm,
 		specialties: specialtiesFilter,
 		page,
 		pageSize,
 	});
 
+	// TODO: validate response body
 	return Response.json({
 		advocates,
 		specialties,
+		totalResults,
 	});
 };

@@ -19,6 +19,7 @@ export default function AdvocateSearch({
 	const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 	const [specialtyFilterInputs, setSpecialtyFilterInputs] =
 		useState(initialSpecialties);
+	const [totalPages, setTotalPages] = useState(1);
 
 	const searchAdvocates = async (): Promise<void> => {
 		const specialtiesToFilterBy = specialtyFilterInputs
@@ -39,12 +40,19 @@ export default function AdvocateSearch({
 			return response.json();
 		});
 
+		const totalPages = Math.ceil(response.totalResults / pageSize);
+
 		setAdvocates(response.advocates);
+		setTotalPages(totalPages);
 	};
 
 	useEffect(() => {
 		searchAdvocates();
-	}, [specialtyFilterInputs, searchTerm]);
+	}, [specialtyFilterInputs, searchTerm, page, pageSize]);
+
+	useEffect(() => {
+		setPage(1);
+	}, [specialtyFilterInputs, searchTerm, pageSize]);
 
 	const clearSpecialties = async () => {
 		setSpecialtyFilterInputs(
@@ -77,6 +85,18 @@ export default function AdvocateSearch({
 		setSearchTerm("");
 	};
 
+	const goToPreviousPage = () => {
+		if (page > 1) {
+			setPage(page - 1);
+		}
+	};
+
+	const goToNextPage = () => {
+		if (page < totalPages) {
+			setPage(page + 1);
+		}
+	};
+
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<h1 className="text-3xl font-bold text-gray-800 mb-8">
@@ -94,8 +114,9 @@ export default function AdvocateSearch({
 							placeholder="Search advocates by name, degree, or city..."
 						/>
 						<button
+							disabled={searchTerm === ""}
 							onClick={onClick}
-							className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+							className="px-4 py-2 bg-blue-500 text-white rounded-md hover:enabled:bg-blue-600 transition-colors disabled:opacity-50"
 						>
 							Reset Search
 						</button>
@@ -129,7 +150,8 @@ export default function AdvocateSearch({
 						{specialtyFilterInputs.length > 0 && (
 							<button
 								onClick={() => clearSpecialties()}
-								className="mt-4 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
+								disabled={specialtyFilterInputs.every((s) => !s.isChecked)}
+								className="mt-4 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:enabled:bg-blue-600 transition-colors disabled:opacity-50"
 							>
 								Clear Specialties
 							</button>
@@ -197,6 +219,26 @@ export default function AdvocateSearch({
 						))}
 					</tbody>
 				</table>
+			</div>
+
+			<div className="flex justify-between items-center mt-4">
+				<button
+					onClick={goToPreviousPage}
+					disabled={page === 1}
+					className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+				>
+					Previous
+				</button>
+				<span className="text-sm text-gray-700">
+					Page {page} of {totalPages}
+				</span>
+				<button
+					onClick={goToNextPage}
+					disabled={page === totalPages}
+					className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+				>
+					Next
+				</button>
 			</div>
 		</main>
 	);
