@@ -7,7 +7,6 @@
 - Api Integration Tests
 - url params to filter search in getserversideprops
 - Fuzzy matching for string searches
-- Structured filtering by specialties tag
 - Better error handling
 - Authentication
 - Containerize
