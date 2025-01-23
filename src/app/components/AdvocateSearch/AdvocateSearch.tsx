@@ -2,16 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { DEFAULT_PAGE_SIZE } from "@/constants";
-import { getAdvocates } from "@/app/api/advocates/route";
+import { SpecialtyFilterInput } from "./types";
 
 interface Props {
 	initialAdvocates: Advocate[];
 	initialSpecialties: SpecialtyFilterInput[];
-}
-
-interface SpecialtyFilterInput {
-	specialty: string;
-	isChecked: boolean;
 }
 
 export default function AdvocateSearch({
@@ -206,14 +201,3 @@ export default function AdvocateSearch({
 		</main>
 	);
 }
-
-export const getServerSideProps = async () => {
-	const { advocates, specialties } = await getAdvocates({});
-
-	const initialSpecialties = specialties.map((s) => ({
-		specialty: s,
-		isChecked: false,
-	}));
-
-	return { props: { initialAdvocates: advocates, initialSpecialties } };
-};
