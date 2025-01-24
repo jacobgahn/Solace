@@ -10,7 +10,7 @@
     "generate": "drizzle-kit generate",
     "migrate:up": "node ./src/db/migrate.js",
     "seed": "ts-node ./src/db/seed/seedScript.ts",
-    "test": "jest --setupFiles dotenv/config"
+    "test": "jest --setupFiles dotenv/config --forceExit"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
