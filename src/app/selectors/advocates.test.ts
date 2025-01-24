@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
 import { searchAdvocates } from "./advocates";
-import { seedDatabase } from "../../db/seed/seed";
+import { prepareTestDatabase } from "../test/prepareTestDatabase";
 import { advocates } from "@/db/schema";
 import db from "@/db";
 
 dotenv.config({ path: "@/test.env" });
 
 beforeAll(async () => {
-	await seedDatabase();
+	await prepareTestDatabase();
 });
 
 afterAll(async () => {
